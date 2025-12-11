@@ -20,38 +20,70 @@
       }
     </script>
 </head>
-<body class="bg-blue-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
-    <header class="flex justify-between items-center bg-primary text-white px-4 py-3 dark:bg-gray-800">
-        <h1 class="text-xl font-bold">🌦️ Météo PWA</h1>
-        <button id="theme-toggle" class="text-2xl bg-transparent hover:bg-blue-100 dark:hover:bg-gray-700 rounded p-2 transition">🌙</button>
-    </header>
-    <main class="max-w-lg mx-auto my-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-colors duration-300">
-        <section id="search-section" class="flex flex-col sm:flex-row gap-2 mb-4">
-            <input id="city-input" type="text" placeholder="Entrez une ville..." class="flex-1 px-3 py-2 rounded border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-900 dark:text-gray-100 transition"/>
-            <button id="search-btn" class="px-4 py-2 rounded bg-primary text-white hover:bg-blue-600 transition">🔍 Rechercher</button>
-            <button id="favorite-btn" class="px-4 py-2 rounded bg-yellow-400 text-white hover:bg-yellow-500 transition">⭐ Favoris</button>
-            <button id="notify-btn" class="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600 transition">🔔 Notifications</button>
-        </section>
-        <section id="weather-section" class="hidden">
-            <h2 id="city-name" class="text-lg font-semibold mb-2"></h2>
-            <div class="weather-main flex items-center gap-4 text-3xl mb-4">
-                <span id="weather-icon"></span>
-                <span id="temperature"></span>°C
-            </div>
-            <div class="weather-details flex gap-6 mb-4 text-base">
-                <span>Vent: <span id="wind"></span></span>
-                <span>Humidité: <span id="humidity"></span></span>
-                <span>Ressenti: <span id="feels-like"></span></span>
-            </div>
-            <div id="hourly-list" class="hourly-list flex gap-2"></div>
-        </section>
-        <section id="favorites-section" class="mt-6">
-            <h3 class="text-md font-semibold mb-2">Favoris</h3>
-            <div id="favorites-list" class="flex flex-wrap gap-2"></div>
-        </section>
-        <div id="loading" class="hidden text-center py-4 text-primary font-semibold">Chargement...</div>
-        <div id="error-message" class="error hidden text-red-600 dark:text-red-400 mt-4"></div>
-    </main>
-    <script src="app.js"></script>
-</body>
+  <body class="bg-blue-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <header class="flex justify-between items-center bg-primary dark:bg-gray-800 text-white px-4 py-3 shadow-md">
+          <h1 class="text-xl font-bold">🌦️ Météo PWA</h1>
+          <button id="theme-toggle"
+                  class="text-2xl bg-transparent hover:bg-blue-100 dark:hover:bg-gray-700 rounded p-2 transition">
+              🌙
+          </button>
+      </header>
+
+      <main class="max-w-lg mx-auto my-10 p-6 rounded-2xl shadow-xl
+                  bg-white dark:bg-gray-800 dark:border dark:border-gray-700
+                  transition-colors duration-300">
+
+          <!-- Barre de recherche -->
+          <section id="search-section" class="flex flex-col sm:flex-row gap-3 mb-5">
+              <input id="city-input" type="text"
+                    placeholder="Entrez une ville..."
+                    class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700
+                            bg-gray-50 dark:bg-gray-900
+                            focus:outline-none focus:ring-2 focus:ring-primary transition" />
+
+              <button id="search-btn"
+                      class="px-4 py-3 rounded-lg bg-primary text-white hover:bg-blue-600 transition">
+                  🔍 Rechercher
+              </button>
+
+              <button id="favorite-btn"
+                      class="px-4 py-3 rounded-lg bg-yellow-400 text-white hover:bg-yellow-500 transition">
+                  ⭐ Favoris
+              </button>
+
+              <button id="notify-btn"
+                      class="px-4 py-3 rounded-lg bg-green-500 text-white hover:bg-green-600 transition">
+                  🔔 Notifications
+              </button>
+          </section>
+
+          <!-- Section météo -->
+          <section id="weather-section" class="hidden">
+              <h2 id="city-name" class="text-xl font-semibold mb-3"></h2>
+
+              <div class="weather-main flex items-center gap-4 text-4xl mb-5">
+                  <span id="weather-icon"></span>
+                  <span id="temperature"></span>°C
+              </div>
+
+              <div class="weather-details flex gap-6 mb-5 text-lg">
+                  <span>Vent : <span id="wind"></span></span>
+                  <span>Humidité : <span id="humidity"></span></span>
+                  <span>Ressenti : <span id="feels-like"></span></span>
+              </div>
+
+              <div id="hourly-list" class="hourly-list flex gap-3 overflow-x-auto"></div>
+          </section>
+
+          <!-- Favoris -->
+          <section id="favorites-section" class="mt-6">
+              <h3 class="text-lg font-semibold mb-2">Favoris</h3>
+              <div id="favorites-list" class="flex flex-wrap gap-2"></div>
+          </section>
+
+          <!-- Loading & Error -->
+          <div id="loading" class="hidden text-center py-4 text-primary font-semibold">Chargement...</div>
+          <div id="error-message" class="error hidden text-red-600 dark:text-red-400 mt-4"></div>
+      </main>
+  </body>
 </html>
