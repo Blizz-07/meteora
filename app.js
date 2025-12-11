@@ -397,4 +397,3 @@ function toggleTheme() {
     setTheme(theme);
 }
 setTheme(getTheme());
-
