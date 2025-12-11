@@ -85,34 +85,21 @@ function updateNotifyButton() {
 }
 
 async function requestNotificationPermission() {
-    if (!('Notification' in window)) {
-        showError('Les notifications ne sont pas supportées par votre navigateur.');
-        return;
-    }
-
-    if (Notification.permission === 'denied') {
-        showError('Les notifications sont bloquées. Veuillez les réactiver dans les paramètres de votre navigateur.');
-        return;
-    }
-
-    try {
-        const permission = await Notification.requestPermission();
-        updateNotifyButton();
-        
-        if (permission === 'granted') {
-            // Notification de test - utiliser Service Worker pour compatibilité PWA
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification('MétéoPWA', {
-                        body: 'Les notifications sont maintenant activées ! 🎉',
-                        icon: 'icons/icon-192.png',
-                        tag: 'welcome'
-                    });
-                });
-            }
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            const registration = await navigator.serviceWorker.ready;
+            registration.showNotification('MétéoPWA', {
+                body: 'Les notifications sont maintenant activées ! 🎉',
+                icon: 'icons/icon-192.png',
+                vibrate: [200, 100, 200]
+            });
+        } else {
+            new Notification('MétéoPWA', {
+                body: 'Les notifications sont maintenant activées !',
+                icon: 'icons/icon-192.png'
+            });
         }
-    } catch (error) {
-        console.error('Erreur lors de la demande de permission:', error);
     }
 }
 
