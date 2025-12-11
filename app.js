@@ -100,12 +100,16 @@ async function requestNotificationPermission() {
         updateNotifyButton();
         
         if (permission === 'granted') {
-            // Notification de test
-            new Notification('MétéoPWA', {
-                body: 'Les notifications sont maintenant activées ! 🎉',
-                icon: 'icons/icon-192.png',
-                tag: 'welcome'
-            });
+            // Notification de test - utiliser Service Worker pour compatibilité PWA
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification('MétéoPWA', {
+                        body: 'Les notifications sont maintenant activées ! 🎉',
+                        icon: 'icons/icon-192.png',
+                        tag: 'welcome'
+                    });
+                });
+            }
         }
     } catch (error) {
         console.error('Erreur lors de la demande de permission:', error);
