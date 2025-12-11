@@ -1,6 +1,6 @@
 {
-  "name": "meteora PWA",
-  "short_name": "meteora",
+  "name": "Météora",
+  "short_name": "Météora",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#2196f3",
