@@ -1,84 +1,45 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Météo PWA</title>
-
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Icône (PWA) -->
-    <link rel="icon" href="icons/icon-192.png" />
-
-    <!-- Manifest -->
-    <link rel="manifest" href="manifest.json" />
-
-    <!-- Styles custom -->
-    <style>
-        .hourly-item {
-            @apply flex flex-col items-center p-3 rounded-lg shadow-md bg-white dark:bg-gray-800;
-        }
-        .rain-alert {
-            @apply border border-blue-500;
-        }
-        .temp-alert {
-            @apply border border-red-500;
-        }
-    </style>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#2196f3">
 </head>
-
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
-
-    <!-- Header -->
-    <header class="p-4 shadow-md bg-white dark:bg-gray-800 flex justify-between items-center">
-        <h1 class="text-2xl font-bold">🌤️ MétéoPWA</h1>
-
-        <button id="theme-toggle"
-            class="px-3 py-2 text-sm rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">
-            🌙 / ☀️
-        </button>
+<body>
+    <header>
+        <h1>🌦️ Météo PWA</h1>
+        <button id="theme-toggle">🌙</button>
     </header>
-
-    <main class="p-4 max-w-xl mx-auto">
-
-        <!-- Barre de recherche -->
-        <div class="flex gap-2 mb-4">
-            <input id="city-input" type="text" placeholder="Rechercher une ville..."
-                class="flex-grow p-2 rounded border dark:bg-gray-800 dark:border-gray-700" />
-            <button id="search-btn"
-                onclick="handleSearch()"
-                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Rechercher</button>
-        </div>
-
-        <!-- Notifications -->
-        <button id="notify-btn"
-            onclick="requestNotificationPermission()"
-            class="w-full mb-4 py-2 rounded bg-purple-500 text-white hover:bg-purple-600">
-            🔔 Activer les notifications
-        </button>
-
-        <!-- Erreur -->
-        <div id="error-message" class="hidden p-3 mb-4 bg-red-500 text-white rounded"></div>
-
-        <!-- Loading -->
-        <div id="loading" class="hidden text-center py-4">
-            <div class="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
-            <p class="mt-2">Chargement...</p>
-        </div>
-
-        <!-- Section météo -->
+    <main>
+        <section id="search-section">
+            <input id="city-input" type="text" placeholder="Entrez une ville...">
+            <button id="search-btn">🔍 Rechercher</button>
+            <button id="favorite-btn">⭐ Ajouter aux favoris</button>
+            <button id="notify-btn">🔔 Notifications</button>
+        </section>
         <section id="weather-section" class="hidden">
-
-            <div class="p-4 mb-4 rounded-lg bg-white dark:bg-gray-800 shadow-lg">
-                <div class="flex justify-between items-center">
-                    <h2 id="city-name" class="text-xl font-semibold"></h2>
-
-                    <button id="favorite-btn"
-                        class="px-3 py-1 rounded bg-yellow-400 hover:bg-yellow-500 text-black">
-                        ⭐ Favoris
-                    </button>
-                </div>
-
-                <div class="text-center mt-4">
-                    <div i
+            <h2 id="city-name"></h2>
+            <div class="weather-main">
+                <span id="weather-icon"></span>
+                <span id="temperature"></span>°C
+            </div>
+            <div class="weather-details">
+                <span>Vent: <span id="wind"></span></span>
+                <span>Humidité: <span id="humidity"></span></span>
+                <span>Ressenti: <span id="feels-like"></span></span>
+            </div>
+            <div id="hourly-list" class="hourly-list"></div>
+        </section>
+        <section id="favorites-section">
+            <h3>Favoris</h3>
+            <div id="favorites-list"></div>
+        </section>
+        <div id="loading" class="hidden">Chargement...</div>
+        <div id="error-message" class="error hidden"></div>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
