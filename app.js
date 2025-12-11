@@ -113,11 +113,13 @@ async function requestNotificationPermission() {
 }
 
 function sendWeatherNotification(city, message, type = 'info') {
-    if (Notification.permission === 'granted') {
-        new Notification(`Alerte météo: ${city}`, {
-            body: message,
-            icon: 'icons/icon-192.png',
-            tag: type
+    if (Notification.permission === 'granted' && navigator.serviceWorker) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification(`Alerte météo: ${city}`, {
+                body: message,
+                icon: 'icons/icon-192.png',
+                tag: type
+            });
         });
     }
 }
