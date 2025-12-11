@@ -96,3 +96,21 @@ button:disabled {
     padding: 0.5em 1em;
     cursor: pointer;
 }
+
+/* css dark mode */
+
+body.dark {
+    background: #222;
+    color: #eee;
+}
+main {
+    background: #333;
+    color: #eee;
+}
+header {
+    background: #111;
+}
+button {
+    background: #444;
+    color: #fff;
+}

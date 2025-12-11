@@ -113,7 +113,13 @@ async function requestNotificationPermission() {
 }
 
 function sendWeatherNotification(city, message, type = 'info') {
-  
+    if (Notification.permission === 'granted') {
+        new Notification(`Alerte météo: ${city}`, {
+            body: message,
+            icon: 'icons/icon-192.png',
+            tag: type
+        });
+    }
 }
 // ===== Recherche et API Météo =====
 async function handleSearch() {
@@ -330,3 +336,65 @@ function showError(message) {
 function hideError() {
     elements.errorMessage.classList.add('hidden');
 }
+
+// ===== Gestion des événements =====
+elements.searchBtn.addEventListener('click', handleSearch);
+elements.cityInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleSearch();
+});
+elements.favoriteBtn.addEventListener('click', addCurrentCityToFavorites);
+elements.favoritesList.addEventListener('click', (e) => {
+    if (e.target.classList.contains('favorite-city')) {
+        const city = e.target.dataset.city;
+        const lat = e.target.dataset.lat;
+        const lon = e.target.dataset.lon;
+        fetchWeather(lat, lon, city);
+    }
+});
+elements.themeToggle.addEventListener('click', toggleTheme);
+elements.notifyBtn.addEventListener('click', requestNotificationPermission);
+
+// ===== Favoris =====
+function getFavorites() {
+    return JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY_FAVORITES) || '[]');
+}
+
+function saveFavorites(favs) {
+    localStorage.setItem(CONFIG.STORAGE_KEY_FAVORITES, JSON.stringify(favs));
+    renderFavorites();
+}
+
+function addCurrentCityToFavorites() {
+    if (!currentCity) return;
+    let favs = getFavorites();
+    if (!favs.some(f => f.name === currentCity.name)) {
+        favs.push(currentCity);
+        saveFavorites(favs);
+    }
+}
+
+function renderFavorites() {
+    const favs = getFavorites();
+    elements.favoritesList.innerHTML = favs.map(f =>
+        `<span class="favorite-city" data-city="${f.name}" data-lat="${f.lat}" data-lon="${f.lon}">${f.name}</span>`
+    ).join('');
+}
+renderFavorites();
+
+// ===== Thème sombre/clair =====
+function getTheme() {
+    return localStorage.getItem(CONFIG.STORAGE_KEY_THEME) || 'light';
+}
+
+function setTheme(theme) {
+    document.body.classList.toggle('dark', theme === 'dark');
+    elements.themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    localStorage.setItem(CONFIG.STORAGE_KEY_THEME, theme);
+}
+
+function toggleTheme() {
+    const theme = getTheme() === 'dark' ? 'light' : 'dark';
+    setTheme(theme);
+}
+setTheme(getTheme());
+
