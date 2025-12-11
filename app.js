@@ -217,15 +217,15 @@ function displayWeather(data, cityName) {
             const isRain = CONFIG.RAIN_CODES.includes(code);
             const isHighTemp = temp > CONFIG.TEMP_THRESHOLD;
             
-            let alertClass = '';
-            if (isRain) alertClass = 'rain-alert';
-            else if (isHighTemp) alertClass = 'temp-alert';
+            let alertClasses = 'bg-gradient-to-b from-blue-100 to-blue-50 dark:from-gray-700 dark:to-gray-800';
+            if (isRain) alertClasses = 'bg-gradient-to-b from-blue-300 to-blue-200 dark:from-blue-900 dark:to-blue-800 border-2 border-blue-400 dark:border-blue-600';
+            else if (isHighTemp) alertClasses = 'bg-gradient-to-b from-orange-200 to-orange-100 dark:from-orange-900 dark:to-orange-800 border-2 border-orange-400 dark:border-orange-600';
 
             hourlyItems.push(`
-                <div class="hourly-item ${alertClass}">
-                    <div class="hourly-time">${time.getHours()}h</div>
-                    <div class="hourly-icon">${getWeatherEmoji(code)}</div>
-                    <div class="hourly-temp">${Math.round(temp)}°C</div>
+                <div class="hourly-item flex flex-col items-center justify-center p-4 rounded-lg min-w-max ${alertClasses} transition-all duration-200">
+                    <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">${time.getHours()}h</div>
+                    <div class="text-3xl mb-1">${getWeatherEmoji(code)}</div>
+                    <div class="text-lg font-bold text-gray-800 dark:text-gray-100">${Math.round(temp)}°C</div>
                 </div>
             `);
         }
@@ -376,7 +376,7 @@ function addCurrentCityToFavorites() {
 function renderFavorites() {
     const favs = getFavorites();
     elements.favoritesList.innerHTML = favs.map(f =>
-        `<span class="favorite-city" data-city="${f.name}" data-lat="${f.lat}" data-lon="${f.lon}">${f.name}</span>`
+        `<button class="favorite-city px-4 py-2 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 dark:from-blue-900 dark:to-blue-800 dark:hover:from-blue-800 dark:hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md" data-city="${f.name}" data-lat="${f.lat}" data-lon="${f.lon}">${f.name}</button>`
     ).join('');
 }
 renderFavorites();
