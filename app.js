@@ -107,7 +107,8 @@ function sendWeatherNotification(city, message, type = 'info') {
     if (!isNotificationSupported()) return;
     
     if (Notification.permission === 'granted') {
-        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        // Utiliser toujours le Service Worker (obligatoire sur mobile)
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             navigator.serviceWorker.ready.then(registration => {
                 registration.showNotification(`Alerte météo: ${city}`, {
                     body: message,
@@ -116,18 +117,12 @@ function sendWeatherNotification(city, message, type = 'info') {
                     badge: 'icons/icon-192.png',
                     vibrate: [200, 100, 200]
                 });
+            }).catch(error => {
+                console.error('Erreur affichage notification:', error);
             });
         } else {
-            new Notification(`Alerte météo: ${city}`, {
-                body: message,
-                icon: 'icons/icon-192.png',
-                tag: type,
-                badge: 'icons/icon-192.png'
-            });
+            console.log('Service Worker non disponible - notification non affichée');
         }
-    } else if (Notification.permission === 'default') {
-        // Demander la permission si pas encore demandée
-        console.log('Permission de notification non accordée');
     }
 }
 // ===== Recherche et API Météo =====
