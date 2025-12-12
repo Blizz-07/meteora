@@ -145,6 +145,29 @@ async function cacheFirst(request) {
     }
 }
 
+// ===== Notifications =====
+// Gestion des clics sur les notifications
+self.addEventListener('notificationclick', (event) => {
+    console.log('[SW] Notification cliquée:', event.notification.tag);
+    event.notification.close();
+    
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then((clientList) => {
+                // Chercher si une fenêtre est déjà ouverte
+                for (const client of clientList) {
+                    if (client.url === '/' && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                // Sinon, ouvrir une nouvelle fenêtre
+                if (clients.openWindow) {
+                    return clients.openWindow('/');
+                }
+            })
+    );
+});
+
 // ===== Messages depuis l'application =====
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
