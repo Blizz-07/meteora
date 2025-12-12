@@ -85,49 +85,99 @@ function updateNotifyButton() {
 }
 
 async function requestNotificationPermission() {
-    const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            const registration = await navigator.serviceWorker.ready;
-            registration.showNotification('MétéoPWA', {
-                body: 'Les notifications sont maintenant activées ! 🎉',
-                icon: 'icons/icon-192.png',
-                vibrate: [200, 100, 200]
-            });
-        } else {
-            new Notification('MétéoPWA', {
-                body: 'Les notifications sont maintenant activées !',
-                icon: 'icons/icon-192.png'
-            });
+    if (!isNotificationSupported()) {
+        showError('Les notifications ne sont pas supportées sur cet appareil');
+        return;
+    }
+    
+    try {
+        const permission = await Notification.requestPermission();
+        updateNotifyButton();
+        
+        if (permission === 'granted') {
+            // Envoyer une notification de test
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    registration.showNotification('MétéoPWA', {
+                        body: 'Les notifications sont maintenant activées ! 🎉',
+                        icon: 'icons/icon-192.png',
+                        tag: 'test',
+                        badge: 'icons/icon-192.png',
+                        vibrate: [200, 100, 200]
+                    });
+                } catch (error) {
+                    console.error('Erreur notification test:', error);
+                    // Fallback si Service Worker indisponible
+                    new Notification('MétéoPWA', {
+                        body: 'Les notifications sont maintenant activées ! 🎉',
+                        icon: 'icons/icon-192.png'
+                    });
+                }
+            } else {
+                // Pas de SW disponible, utiliser l'API Notification directe
+                new Notification('MétéoPWA', {
+                    body: 'Les notifications sont maintenant activées ! 🎉',
+                    icon: 'icons/icon-192.png'
+                });
+            }
         }
+    } catch (error) {
+        console.error('Erreur lors de la demande de permission:', error);
+        showError('Erreur lors de l\'activation des notifications');
     }
 }
 
 function sendWeatherNotification(city, message, type = 'info') {
-    if (!isNotificationSupported()) return;
+    if (!isNotificationSupported()) {
+        console.log('Notifications non supportées');
+        return;
+    }
     
-    if (Notification.permission === 'granted') {
-        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.ready.then(registration => {
-                registration.showNotification(`Alerte météo: ${city}`, {
+    if (Notification.permission !== 'granted') {
+        console.log('Permission de notification non accordée');
+        return;
+    }
+    
+    // Essayer d'utiliser le Service Worker en premier
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+            console.log('Envoi notification via SW:', message);
+            registration.showNotification(`Alerte météo: ${city}`, {
+                body: message,
+                icon: 'icons/icon-192.png',
+                tag: type,
+                badge: 'icons/icon-192.png',
+                vibrate: [200, 100, 200]
+            });
+        }).catch(error => {
+            console.error('Erreur notification via SW:', error);
+            // Fallback : utiliser l'API Notification directe
+            try {
+                new Notification(`Alerte météo: ${city}`, {
                     body: message,
                     icon: 'icons/icon-192.png',
                     tag: type,
                     badge: 'icons/icon-192.png',
                     vibrate: [200, 100, 200]
                 });
-            });
-        } else {
+            } catch (e) {
+                console.error('Erreur notification directe:', e);
+            }
+        });
+    } else {
+        // Service Worker non disponible, utiliser l'API Notification directe
+        try {
             new Notification(`Alerte météo: ${city}`, {
                 body: message,
                 icon: 'icons/icon-192.png',
                 tag: type,
-                badge: 'icons/icon-192.png'
+                badge: 'icons/icon-192.png',
+                vibrate: [200, 100, 200]
             });
+        } catch (error) {
+            console.error('Erreur notification directe:', error);
         }
-    } else if (Notification.permission === 'default') {
-        // Demander la permission si pas encore demandée
-        console.log('Permission de notification non accordée');
     }
 }
 // ===== Recherche et API Météo =====
@@ -209,9 +259,9 @@ function displayWeather(data, cityName) {
     elements.cityName.textContent = cityName;
     elements.temperature.textContent = Math.round(current.temperature_2m);
     elements.weatherIcon.textContent = getWeatherEmoji(current.weather_code);
-    elements.wind.textContent = `${Math.round(current.wind_speed_10m)} km/h`;
-    elements.humidity.textContent = `${current.relative_humidity_2m} %`;
-    elements.feelsLike.textContent = `${Math.round(current.apparent_temperature)}°C`;
+    elements.wind.textContent = `${Math.round(current.wind_speed_10m)}`;
+    elements.humidity.textContent = `${current.relative_humidity_2m}`;
+    elements.feelsLike.textContent = `${Math.round(current.apparent_temperature)}`;
 
     // Prévisions horaires (4 prochaines heures)
     const currentHour = new Date().getHours();
