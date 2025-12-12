@@ -86,43 +86,52 @@ function updateNotifyButton() {
 
 async function requestNotificationPermission() {
     const permission = await Notification.requestPermission();
+    updateNotifyButton();
+    
     if (permission === 'granted') {
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            const registration = await navigator.serviceWorker.ready;
-            registration.showNotification('MétéoPWA', {
-                body: 'Les notifications sont maintenant activées ! 🎉',
-                icon: 'icons/icon-192.png',
-                vibrate: [200, 100, 200]
-            });
-        } else {
-            new Notification('MétéoPWA', {
-                body: 'Les notifications sont maintenant activées !',
-                icon: 'icons/icon-192.png'
-            });
+        // Attendre que le SW soit prêt
+        if ('serviceWorker' in navigator) {
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                registration.showNotification('MétéoPWA', {
+                    body: 'Les notifications sont maintenant activées ! 🎉',
+                    icon: 'icons/icon-192.png',
+                    vibrate: [200, 100, 200]
+                });
+            } catch (error) {
+                console.error('Erreur notification test:', error);
+            }
         }
     }
 }
 
 function sendWeatherNotification(city, message, type = 'info') {
-    if (!isNotificationSupported()) return;
+    if (!isNotificationSupported()) {
+        console.log('Notifications non supportées');
+        return;
+    }
     
-    if (Notification.permission === 'granted') {
-        // Utiliser toujours le Service Worker (obligatoire sur mobile)
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.ready.then(registration => {
-                registration.showNotification(`Alerte météo: ${city}`, {
-                    body: message,
-                    icon: 'icons/icon-192.png',
-                    tag: type,
-                    badge: 'icons/icon-192.png',
-                    vibrate: [200, 100, 200]
-                });
-            }).catch(error => {
-                console.error('Erreur affichage notification:', error);
+    if (Notification.permission !== 'granted') {
+        console.log('Permission de notification non accordée');
+        return;
+    }
+    
+    // Utiliser toujours le Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+            console.log('Envoi notification:', message);
+            registration.showNotification(`Alerte météo: ${city}`, {
+                body: message,
+                icon: 'icons/icon-192.png',
+                tag: type,
+                badge: 'icons/icon-192.png',
+                vibrate: [200, 100, 200]
             });
-        } else {
-            console.log('Service Worker non disponible - notification non affichée');
-        }
+        }).catch(error => {
+            console.error('Erreur notification:', error);
+        });
+    } else {
+        console.log('Service Worker non disponible');
     }
 }
 // ===== Recherche et API Météo =====
